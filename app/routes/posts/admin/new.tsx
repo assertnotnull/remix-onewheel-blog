@@ -1,8 +1,9 @@
 import { Form, useActionData, useTransition } from "@remix-run/react";
-import type { ActionFunction } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { redirect, json } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { createPost } from "~/models/post.server";
+import { requireAdminUser } from "~/session.server";
 
 const inputClassName =
   "w-full rounded border border-gray-500 px-2 py-1 text-lg";
@@ -15,7 +16,13 @@ type ActionData =
     }
   | undefined;
 
+export const loader: LoaderFunction = async ({ request }) => {
+  await requireAdminUser(request);
+  return json({});
+};
+
 export const action: ActionFunction = async ({ request }) => {
+  await requireAdminUser(request);
   const data = await request.formData();
 
   const title = data.get("title");
