@@ -7,6 +7,7 @@ import {
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { redirect, json } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
+import type { Post } from "~/models/post.server";
 import {
   createPost,
   deletePost,
@@ -14,6 +15,8 @@ import {
   updatePost,
 } from "~/models/post.server";
 import { requireAdminUser } from "~/session.server";
+
+type LoaderData = { post: Post };
 
 const inputClassName =
   "w-full rounded border border-gray-500 px-2 py-1 text-lg";
@@ -28,6 +31,7 @@ type ActionData =
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await requireAdminUser(request);
+  invariant(params.slug, "slug is required");
   if (params.slug === "new") {
     return json({});
   }
@@ -37,6 +41,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export const action: ActionFunction = async ({ request, params }) => {
   await requireAdminUser(request);
+  invariant(params.slug, "slug is required");
   const data = await request.formData();
   const intent = data.get("intent");
 
@@ -75,7 +80,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function NewPostRoute() {
-  const data = useLoaderData();
+  const data = useLoaderData<LoaderData>();
   const errors = useActionData<ActionData>();
 
   const transition = useTransition();
