@@ -37,3 +37,13 @@ export default function AdminRoute() {
     </div>
   );
 }
+
+/** catch errors in /posts/admin route */
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <div className="text-red-500">
+      Oh no somthing went wrong
+      <pre>{error.message}</pre>
+    </div>
+  );
+}
